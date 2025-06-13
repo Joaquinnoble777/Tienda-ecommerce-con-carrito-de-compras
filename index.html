@@ -1,95 +1,84 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Catálogo Pro</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo Pro</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-light">
 
-  <div class="container py-4">
-    <h1 class="text-center mb-4">🛍️ Catálogo Pro</h1>
-    <div class="row mb-3">
-      <div class="col-md-3">
-        <input id="searchInput" class="form-control" placeholder="Buscar por nombre o marca" />
-      </div>
-      <div class="col-md-3">
-        <select id="categoryFilter" class="form-select">
-          <option value="">Todas las categorías</option>
-          <option value="Suplementos">Suplementos</option>
-          <option value="Ropa">Ropa</option>
-          <option value="Accesorios">Accesorios</option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <input type="range" min="0" max="500" value="500" id="priceRange" class="form-range" />
-        <small id="priceLabel">Precio hasta: $500</small>
-      </div>
-      <div class="col-md-3 text-end">
-        <button class="btn btn-dark" onclick="toggleDarkMode()">🌙 Modo Oscuro</button>
-      </div>
-    </div>
+  <div class="container py-4">
+    <h1 class="text-center mb-4">🛍️ Catálogo Pro</h1>
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <input id="searchInput" class="form-control" placeholder="Buscar por nombre o marca" />
+      </div>
+      <div class="col-md-3">
+        <select id="categoryFilter" class="form-select">
+          <option value="">Todas las categorías</option>
+          <option value="Suplementos">Suplementos</option>
+          <option value="Ropa">Ropa</option>
+          <option value="Accesorios">Accesorios</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <input type="range" min="0" max="500" value="500" id="priceRange" class="form-range" />
+        <small id="priceLabel">Precio hasta: $500</small>
+      </div>
+      <div class="col-md-3 text-end">
+        <button class="btn btn-dark" onclick="toggleDarkMode()">🌙 Modo Oscuro</button>
+      </div>
+    </div>
 
-    <div class="text-end mb-3">
-      <button class="btn btn-primary" onclick="verCarrito()">
-        🛒 Ver carrito (<span id="carritoCount">0</span>)
-      </button>
-    </div>
+    <div class="text-end mb-3">
+      <button class="btn btn-primary" onclick="verCarrito()">
+        🛒 Ver carrito (<span id="carritoCount">0</span>)
+      </button>
+    </div>
 
-    <div id="productContainer" class="row g-3"></div>
+    <div id="productContainer" class="row g-3"></div>
 
-    <div class="text-center mt-4">
-      <button class="btn btn-outline-secondary" onclick="loadMore()">Cargar más</button>
-    </div>
-  </div>
+    <div class="text-center mt-4">
+      <button class="btn btn-outline-secondary" onclick="loadMore()">Cargar más</button>
+    </div>
+  </div>
 
-  <!-- Modal para detalles del producto -->
-  <div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalTitle"></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body" id="modalBody"></div>
-      </div>
-    </div>
-  </div>
+  <!-- Modal para detalles del producto -->
+  <div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+      </div>
+    </div>
+  </div>
 
-  <!-- Modal para el carrito -->
-  <div class="modal fade" id="carritoModal" tabindex="-1" aria-labelledby="carritoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="carritoModalLabel">Carrito de Compras</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body" id="carritoBody"></div>
-        <div class="modal-footer">
-            
-            <!-- Dentro del modal del carrito (carritoModal), abajo del contenido -->
-<div class="modal-footer">
-  <button class="btn btn-danger" onclick="vaciarCarrito()">Vaciar carrito</button>
-  <button class="btn btn-success" onclick="enviarCarritoPorWhatsApp()">Enviar por WhatsApp</button>
-</div>
+  <!-- Modal para el carrito -->
+  <div class="modal fade" id="carritoModal" tabindex="-1" aria-labelledby="carritoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="carritoModalLabel">Carrito de Compras</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="carritoBody"></div>
+        <div class="modal-footer">
+          <button class="btn btn-danger" onclick="vaciarCarrito()">Vaciar carrito</button>
+          <button class="btn btn-success" onclick="enviarCarritoPorWhatsApp()">Enviar por WhatsApp</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-            
-            
-            
-            
-          <button class="btn btn-danger" onclick="vaciarCarrito()">Vaciar carrito</button>
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="app.js"></script>
 
 </body>
-
 </html>

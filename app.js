@@ -7,6 +7,32 @@ let allProducts = [
 let shown = 0;
 let carrito = [];
 
+// Cargar estado inicial
+window.addEventListener("DOMContentLoaded", () => {
+  const carritoGuardado = localStorage.getItem("carrito");
+  if (carritoGuardado) {
+    carrito = JSON.parse(carritoGuardado);
+    actualizarCarrito();
+  }
+
+  const modoOscuro = localStorage.getItem("modoOscuro") === "true";
+  if (modoOscuro) {
+    document.body.classList.add("dark-mode", "bg-dark", "text-white");
+    document.body.classList.remove("bg-light", "text-dark");
+  }
+
+  loadMore();
+});
+
+function adaptarModalOscuro(modalId) {
+  const modalContent = document.querySelector(`#${modalId} .modal-content`);
+  if (document.body.classList.contains("dark-mode")) {
+    modalContent.classList.add("bg-dark", "text-white");
+  } else {
+    modalContent.classList.remove("bg-dark", "text-white");
+  }
+}
+
 function renderProducts(products) {
   const container = document.getElementById("productContainer");
   products.forEach(p => {
@@ -19,7 +45,7 @@ function renderProducts(products) {
           <h5 class="card-title">${p.name}</h5>
           <p class="card-text">${p.brand} - $${p.price}</p>
           <button class="btn btn-outline-primary w-100 mb-2 mt-auto" onclick="agregarAlCarrito(${p.id})">Agregar al carrito</button>
-          <a class="btn btn-success w-100" href="https://wa.me/59891234567?text=Hola,%20quiero%20consultar%20por%20el%20producto:%20${encodeURIComponent(p.name)}" target="_blank">Consultar por WhatsApp</a>
+          <a class="btn btn-success w-100" href="https://wa.me/59899946914?text=Hola,%20quiero%20consultar%20por%20el%20producto:%20${encodeURIComponent(p.name)}" target="_blank">Consultar por WhatsApp</a>
         </div>
       </div>
     `;
@@ -34,13 +60,25 @@ function loadMore() {
 }
 
 function toggleDarkMode() {
-  document.body.classList.toggle("dark-mode");
+  const body = document.body;
+  const isDark = body.classList.toggle("dark-mode");
+
+  if (isDark) {
+    body.classList.add("bg-dark", "text-white");
+    body.classList.remove("bg-light", "text-dark");
+  } else {
+    body.classList.remove("bg-dark", "text-white");
+    body.classList.add("bg-light", "text-dark");
+  }
+
+  localStorage.setItem("modoOscuro", isDark);
 }
 
 function agregarAlCarrito(id) {
   const prod = allProducts.find(p => p.id === id);
   carrito.push(prod);
   actualizarCarrito();
+  localStorage.setItem("carrito", JSON.stringify(carrito));
 }
 
 function actualizarCarrito() {
@@ -57,34 +95,12 @@ function mostrarDetalles(id) {
     <p><strong>Categoría:</strong> ${prod.category}</p>
     <p>${prod.description}</p>
   `;
+  adaptarModalOscuro("productoModal");
   const modal = new bootstrap.Modal(document.getElementById("productoModal"));
   modal.show();
 }
 
 function verCarrito() {
-  let carritoModal = document.getElementById("carritoModal");
-  if (!carritoModal) {
-    carritoModal = document.createElement("div");
-    carritoModal.className = "modal fade";
-    carritoModal.id = "carritoModal";
-    carritoModal.innerHTML = `
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Carrito</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body" id="carritoBody"></div>
-          <div class="modal-footer">
-            <button class="btn btn-danger" onclick="vaciarCarrito()">Vaciar carrito</button>
-            <button class="btn btn-success" onclick="enviarCarritoPorWhatsApp()">Enviar por WhatsApp</button>
-          </div>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(carritoModal);
-  }
-
   const carritoBody = document.getElementById("carritoBody");
   carritoBody.innerHTML = "";
 
@@ -116,6 +132,7 @@ function verCarrito() {
     carritoBody.appendChild(totalDiv);
   }
 
+  adaptarModalOscuro("carritoModal");
   const modal = new bootstrap.Modal(document.getElementById("carritoModal"));
   modal.show();
 }
@@ -123,7 +140,17 @@ function verCarrito() {
 function vaciarCarrito() {
   carrito = [];
   actualizarCarrito();
-  verCarrito();
+  localStorage.removeItem("carrito");
+
+  // Cerramos el modal si está abierto
+  const modalEl = document.getElementById("carritoModal");
+  const modal = bootstrap.Modal.getInstance(modalEl);
+  if (modal) {
+    modal.hide();
+  }
+
+  // Limpiamos el contenido del modal para que no quede info vieja
+  document.getElementById("carritoBody").innerHTML = "<p>El carrito está vacío.</p>";
 }
 
 function enviarCarritoPorWhatsApp() {
@@ -157,12 +184,13 @@ function enviarCarritoPorWhatsApp() {
 
   mensaje += `\n🧾 Total: $${total}`;
 
-  const telefono = "59899946914"; // Cambiá por tu número
+  // Número correcto sin espacios ni símbolos
+  const telefono = "59899946914";
   const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
-
   window.open(url, "_blank");
 }
 
+// Filtros
 document.getElementById("searchInput").addEventListener("input", filterProducts);
 document.getElementById("categoryFilter").addEventListener("change", filterProducts);
 document.getElementById("priceRange").addEventListener("input", () => {
@@ -183,8 +211,7 @@ function filterProducts() {
     (!category || p.category === category) &&
     p.price <= maxPrice
   );
+
   renderProducts(filtered);
   shown = filtered.length;
 }
-
-window.onload = loadMore;
